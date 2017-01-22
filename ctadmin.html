@@ -1,0 +1,140 @@
+
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Windows (vers 14 February 2006), see www.w3.org" />
+
+  <script type="text/javascript">
+function getUrlVars()
+{
+var vars = [], hash;
+var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+ 
+for(var i = 0; i < hashes.length; i++)
+{
+hash = hashes[i].split('=');
+vars.push(hash[0]);
+vars[hash[0]] = hash[1];
+}
+ 
+return vars;
+}
+
+
+  </script>
+  <title>CT admin stuff</title>
+  <style type="text/css">
+  html,body{
+  padding:0;
+  margin:0;
+  color:#333;
+  
+  }
+  td{
+  padding:5px;
+  padding-left:25px;
+  }
+  .left {
+    background-color:#eee;
+    text-align:right;
+    padding:5px;
+    padding-right:25px;
+    border-right:solid 1px #ccc;
+    letter-spacing: -1px;
+    font-weight:bold;
+    text-transform:uppercase;
+  }
+  tr {
+    border:solid 1px #ccc;
+  }
+  select{
+    letter-spacing:0px;
+  }
+    
+  </style>
+</head>
+<body onload="urlvars = getUrlVars(); if(urlvars['playername'] != undefined){ document.getElementById('player_name').value = urlvars['playername'];}">
+<table border=1 style="font-family: Arial; border:1px solid #ccc; border-collapse:collapse; width:100%; margin:0; padding:0; table-layout:fixed;">
+
+<tr>
+<td class='left'>
+player search
+</td>
+<td>
+<input type="text" id="player_name" /> <input type="submit" value="to profile" onclick="window.location = 'http://convoytrucking.net/player/' + document.getElementById('player_name').value;" /><input type="submit" value="to related accounts" onclick="window.location = 'http://convoytrucking.net/player/' + document.getElementById('player_name').value + '/admin/duplicates';" /><input type="submit" value="to player log" onclick="window.location = 'http://convoytrucking.net/player/' + document.getElementById('player_name').value + '/log';" /><form action="http://www.convoytrucking.net/panel.php?show=admin&go=players" method="post" style="display:inline;" >
+<input type="hidden" name="search_player" /></form><form style="display:inline;" action="http://convoytrucking.net/players.php?go=log" method="post"><input type="hidden" name="search"/></form>
+</td>
+</tr>
+
+<tr>
+<td class='left'>
+vehicle models
+</td>
+<td>
+<input type="text" id="vehicle_model" /><input type="submit" onclick="window.location = 'http://www.convoytrucking.net/vehicles/' + document.getElementById('vehicle_model').value;" value="search by vehicle name" /><input type="submit" onclick="window.location = 'http://www.convoytrucking.net/vehicles/' + document.getElementById('vehicle_model').value;" value="search by vehicle id" />
+</tr>
+
+<tr>
+<td class='left'>
+house id
+</td>
+<td>
+<input type="text" id="house_id" maxlength=4 /> <input type="submit" onclick="window.location = 'http://www.convoytrucking.net/houses/' + document.getElementById('house_id').value;" value="go to house page" />
+</td>
+</tr>
+
+<tr>
+<td class='left'>
+player statistics sorted by:
+</td>
+<td>
+<form action="http://www.convoytrucking.net/players/scoretable" method="GET">
+<select id="sort" name="sort">
+<option class="new" value="score">score</option>
+<option class="new" value="statistics_odometer">distance driven</option>
+<option class="new" value="statistics_truck_loads">truck loads</option>
+<option class="new" value="convoy">convoy score</option>
+</select>
+<input type="hidden" name="show" value="scoretable" />
+<input type="submit" value="go" />
+</form>
+</td>
+</tr>
+
+<tr>
+<td class='left'>
+quick links
+</td>
+<td>
+<a href="http://www.convoytrucking.net/manage/console">chat console</a> | <a href="http://www.convoytrucking.net/manage/bans">Recent Bans</a> | <a href="http://www.convoytrucking.net/manage/errors">SQL Errors</a> | <a href="http://www.convoytrucking.net/manage/">Server Info</a> |<a href="http://www.convoytrucking.net/server-info">Public Server Info</a> | <a href="http://www.convoytrucking.net/manage/iprecords">recent player's IP addresses</a> | <a href="http://www.forum.convoytrucking.net/index.php/board,16.0.html">staff board</a> | <a href="http://www.forum.convoytrucking.net/index.php/topic,3384.0.html">mod commands</a> | <a href="http://www.forum.convoytrucking.net/index.php/topic,796.0.html">punishments</a> | <a href="http://www.forum.convoytrucking.net/index.php/topic,19146.0.html">Rubber's how to be a mod guide</a> | <a href="http://forum.convoytrucking.net/">forum</a> | <a href="http://convoytrucking.net/">website</a> | <a href="http://dl.dropbox.com/u/32336900/Fraps%20v3.4.7.exe.zip">download to fraps (v3.4.7)</a> | <a href="http://joshyinator.co.cc/ct_watch.php?password=joshy789">activity watchlist (made by Joshy)</a>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 style="background-color:#eee; text-align:center;">
+<a href="samp://37.187.67.236:7777/"><img src="http://monitor.sacnr.com/sig-1-1658120" /><br />
+Enter server</a>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 style="background-color:#eee; text-align:center;">
+<a href="javascript://" onclick="document.getElementById('chat').src = 'http://www.convoytrucking.net/chat';">Refresh chat (don't refresh too often!)</a><br />
+<iframe id="chat" style="height:500px; width:700px;" src="http://www.convoytrucking.net/chat" >Browser doesn't support iframes.</iframe>
+</td>
+</tr>
+
+<tr>
+<td colspan=2 style="background-color:#eee; text-align:center;">
+<span style="padding:10px; padding-top:2px; padding-bottom:2px; border-radius:3px; background-color:rgba(0,0,0,0.8); font-weight:bold; color:white;">Made by Joshy & Updated by Carl.</div>
+</td>
+</tr>
+
+
+</table>
+</body>
+</html>
