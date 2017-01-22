@@ -1,0 +1,574 @@
+<html>
+<head>
+<meta type="description" content="Joshy's chatlog sorter" />
+<title>Joshy's chatlog sorter</title>
+
+<style type="text/css">
+body {
+	background-color: #eee;
+	padding: 10px;
+	font-family: 'Arial', sans-serif;
+}
+
+.color_icon {
+	width:0px;
+	border-bottom: 6px solid limegreen;
+	border-top: 6px solid red;
+	border-right: 6px solid blue;
+	border-left: 6px solid yellow;
+	box-shadow: 0px 0px 0px 1px #999;
+}
+
+a[title] {
+	border-bottom: 1px dotted #999;
+}
+
+fieldset {
+	background-color: #fff;
+	padding: 10px;
+	border: 1px solid #999;
+	border-radius: 3px;
+}
+
+fieldset legend {
+	padding: 2px 10px 2px 10px;
+	font-size: 18px;
+	background-color: #eee;
+	border: 1px solid #999;
+	border-radius: 3px;
+}
+
+fieldset textarea {
+	border: 1px solid #999;
+	border-radius: 3px;
+	background-color: #eee;
+}
+
+#output {
+	border: 1px solid #999;
+	border-radius: 3px;
+	background-color: #111;
+	color: white;
+	font-family: 'Courier New', monospace;
+	font-size: 13px;
+	max-height: 400px;
+	overflow-y: scroll;
+	overflow-x: auto;
+}
+
+#output:hover, textarea:hover, fieldset input[type=checkbox]:hover {
+	box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+}
+
+#output:focus, textarea:focus {
+	box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+</style>
+
+<script type="text/javascript">
+	function randomOverlay(){
+		var rand1 = Math.floor(Math.random() * 13);
+		var rand2 = Math.floor(Math.random() * 3);
+		
+		if(rand1 == 0)
+		{
+			document.getElementById('overlay').innerHTML = "hobos are sorting your chatlog<br />";
+		}else if(rand1 == 1)
+		{
+			document.getElementById('overlay').innerHTML = "space martians are sorting your chatlog<br />";
+		}else if(rand1 == 2)
+		{
+			document.getElementById('overlay').innerHTML = "zoidburg is sorting your chatlog (for low pay)<br />";
+		}else if(rand1 == 3)
+		{
+			document.getElementById('overlay').innerHTML = "joshy's minions are sorting your chatlog<br />";
+		}else if(rand1 == 4)
+		{
+			document.getElementById('overlay').innerHTML = "lewis from bluexephos is sorting your chatlog :D<br />";
+		}else if(rand1 == 5)
+		{
+			document.getElementById('overlay').innerHTML = "WALL-E is sorting your chatlog<br />";
+		}else if(rand1 == 6)
+		{
+			document.getElementById('overlay').innerHTML = "01110011011011110111001001110100011010010110111001100111<br />";
+		}else if(rand1 == 7)
+		{
+			document.getElementById('overlay').innerHTML = "mick88 was unavailable to sort your chatlog, so bender is doing it instead<br />";
+		}else if(rand1 == 8)
+		{
+			document.getElementById('overlay').innerHTML = "enviroman is sorting your chatlog as long as you recycle!<br />";
+		}else if(rand1 == 9)
+		{
+			document.getElementById('overlay').innerHTML = "you are our 1000th visitor, would you like a free iPad?<br />";
+		}else if(rand1 == 10)
+		{
+		document.getElementById('overlay').innerHTML = "captain slow (james may) is sorting your chatlog, feel free to overtake<br />";
+		}else if(rand1 == 11)
+		{
+		document.getElementById('overlay').innerHTML = "in the meantime, you can visit <a href='http://reddit.com/r/AdviceAnimals' target='_blank'>http://reddit.com/r/AdviceAnimals</a><br />";
+		}else if(rand1 == 12)
+		{
+		document.getElementById('overlay').innerHTML = "TSA has decided to inspect your chatlog and will stop shortly<br />";
+		}else
+		{
+		document.getElementById('overlay').innerHTML = "you'll never see this message.<br />";
+		}
+		
+		if(rand2 == 0){
+			document.getElementById('overlay').innerHTML = document.getElementById('overlay').innerHTML + "did you know 11% of people are left handed?";
+		}else if(rand2 == 1){
+			document.getElementById('overlay').innerHTML = document.getElementById('overlay').innerHTML + "did you know 8% of people have an extra rib?";
+		}else if(rand2 == 2){
+			document.getElementById('overlay').innerHTML = document.getElementById('overlay').innerHTML + "did you know E is the most common letter, whereas Q is the least common?";
+		}
+	
+		document.getElementById('overlay').innerHTML = document.getElementById('overlay').innerHTML + "<hr />chatlog sorter made by Joshy";
+	}
+	function fileDropInit(){
+	if (window.File && window.FileReader && window.FileList) {
+	document.getElementById('file_drop').addEventListener('dragover', handleDragOver, false);
+	document.getElementById('file_drop').addEventListener('drop', handleFileSelect, false);
+	document.getElementById('file_drop').addEventListener('dragleave', handleDragOut, false);
+	document.getElementById('file_select').addEventListener('change', handleFileSelect, false);
+	document.getElementById('file_select').value = "";
+	}else{
+	document.getElementById('file_drop').innerHTML = "Your browser does not support File APIs.";
+	}
+	}
+	
+	var text = "";
+	var file = false;
+	var loading = false;
+	var dragging = false;
+	
+	function releaseFile(){
+		if(loading == true)
+		{
+			reader.abort();
+		}
+		else
+		{
+		window.text = "";
+		window.file = false;
+		document.getElementById('chatlog').disabled = false;
+		document.getElementById('chatlog').style.display = 'block';
+		document.getElementById('file_info').innerHTML = "File released.";
+		document.getElementById('file_select').value = "";
+		}
+		document.getElementById('file_release').style.display = "none";
+	}
+	
+	var reader = new FileReader;
+	reader.onload = function(e){ 
+		document.getElementById('chatlog').disabled = true;
+		document.getElementById('chatlog').style.display = 'none';
+		document.getElementById('file_release').value = "Release file";
+		document.getElementById('file_release').style.display = "inline";
+		window.text = e.target.result;
+		window.file = true;
+		window.loading = false;
+		document.getElementById('file_info').innerHTML = "File loaded.";
+	}
+	reader.onerror = function(e) {
+		switch(e.target.error.code) {
+			case e.target.error.NOT_FOUND_ERR:
+				document.getElementById('file_info').innerHTML = "File could not be found.";
+				break;
+			case evt.target.error.NOT_READABLE_ERR:
+				document.getElementById('file_info').innerHTML = "File is not readable.";
+				break;
+			case evt.target.error.ABORT_ERR:
+				break; // noop
+			default:
+				document.getElementById('file_info').innerHTML = "An error occurred while trying to read this file.";
+		};
+		window.loading = false;
+		document.getElementById('chatlog').disabled = false;
+		document.getElementById('chatlog').style.display = 'block';
+	}
+	reader.onprogress = function(e) { document.getElementById('file_release').value = "Abort file load";document.getElementById('file_release').style.display = "inline"; if(e.loaded / e.total != 1) { window.loading = true; document.getElementById('file_info').innerHTML = "Loading file (" + ((e.lengthComputable) ? Math.floor((e.loaded / e.total) * 100) + "%" : "N/A" ) + ")"; } }
+	reader.onabort = function(e) {
+		window.loading = false;
+		document.getElementById('chatlog').disabled = false;
+		document.getElementById('chatlog').style.display = 'block';
+		document.getElementById('file_info').innerHTML = "File loading aborted.";
+	}
+	
+	function handleFileSelect(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+
+		var files = ((typeof evt.dataTransfer != 'undefined') ? evt.dataTransfer.files : evt.target.files); // FileList object.
+		
+		document.getElementById('file_info').style.display = 'block';
+		if(files[0].type == "text/plain")
+		{
+		window.loading = true;
+		document.getElementById('file_release').value = "Abort file load";
+		document.getElementById('file_release').style.display = "inline";
+		document.getElementById('chatlog').disabled = false;
+		document.getElementById('chatlog').style.display = 'block';
+		reader.readAsText(files[0]);
+		
+		}
+		else
+		{
+		document.getElementById('file_info').innerHTML = 'This is not a text file!';
+		document.getElementById('file_select').value = "";
+		window.text = "";
+		window.file = false;
+		}
+	}
+
+	function handleDragOver(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+		evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+		if(window.dragging == false){
+		document.getElementById('file_info').style.display = "block";
+		window.fileinfooriginal = document.getElementById('file_info').innerHTML;
+		document.getElementById('file_info').innerHTML = "Drop to use this file.";
+		window.dragging = true;
+		}
+	}
+	
+	function handleDragOut(evt) {
+		document.getElementById('file_info').style.display = "block";
+		document.getElementById('file_info').innerHTML = window.fileinfooriginal;
+		window.dragging = false;
+	}
+  
+	function strip_colors(text)
+	{
+		var regColorcode = /^(#)?([0-9a-fA-F]{6})?$/;
+		var colorArray = text.split("{");
+
+		for(x in colorArray){
+			var tmp = colorArray[x].split("}");
+			if(tmp[0].length == 6 && regColorcode.test(tmp[0]) == true){
+				text = text.replace("{" + tmp[0] + "}","");
+			}
+		}
+
+		return text;
+	}
+
+	function parse_colors(text)
+	{
+		var regColorcode = /^(#)?([0-9a-fA-F]{6})?$/;
+		var colorArray = text.split("{");
+		var spanCount = 0;
+
+		for(x in colorArray){
+			var tmp = colorArray[x].split("}");
+			if(tmp[0].length == 6 && regColorcode.test(tmp[0]) == true){
+				var spanTmp = "<span style='color: #" + tmp[0] + ";'>";
+				spanCount++;
+				text = text.replace("{" + tmp[0] + "}",spanTmp);
+			}
+		}
+
+		for(i=0;i<spanCount;i++){
+			text = text + "</span>";
+		}
+
+		return text;
+	}
+
+	function htmlspecialchars(text)
+	{
+	return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+	}
+
+	function sort_log()
+	{
+		
+		document.getElementById('overlay').style.display = 'block';
+		if(window.loading) { alert("Wait until file has finished loading!"); document.getElementById('overlay').style.display = 'none'; return false; }
+		if(window.file) { var lines = window.text.split("\n");}
+		else { var lines = document.getElementById('chatlog').value.split("\n"); }
+		if(lines.length == 1 && lines[0] == "") {alert("You forgot to insert chatlog!"); document.getElementById('overlay').style.display = 'none'; return false; }
+
+		var players = document.getElementById('players').value.split("\n");
+		//if(players.length == 1 && players[0] == "") {alert("You forgot to list players!"); return false; }
+		var terms = document.getElementById('terms').value.split("\n");
+		var color = document.getElementById('color').value;
+
+
+		document.getElementById('output_container').style.display = 'block';
+		document.getElementById('output').value = "";
+
+
+		var searched = new Array();
+
+		var admin_message_include = -1;
+
+		for(line in lines)
+		{
+			for(player in players)
+			{
+				if(admin_message_include == line || (document.getElementById('case').checked == true && lines[line].indexOf(players[player]) >= 0) ||
+				(document.getElementById('case').checked == false && lines[line].toLowerCase().indexOf(players[player].toLowerCase()) >= 0))
+				{
+					if((document.getElementById('player_all').checked == true && lines[line] != "") ||
+						admin_message_include == line ||
+						(document.getElementById('player_chat').checked == true &&
+							(
+								(	// Main chat
+									lines[line].toLowerCase().indexOf("] <" + players[player].toLowerCase()) == 9 &&
+									lines[line].toLowerCase().indexOf("> ") != -1
+								) ||
+								(	// CB
+									lines[line].toLowerCase().indexOf("] (cb:") == 9 &&
+									lines[line].toLowerCase().indexOf(") " + players[player].toLowerCase()) < 19 &&
+									lines[line].toLowerCase().indexOf(": ") != -1
+								) ||
+								( 	// /me
+									lines[line].toLowerCase().indexOf("] * " + players[player].toLowerCase()) == 9
+								)
+							)
+						) ||
+						(document.getElementById('player_admin_chat').checked == true &&
+							(
+								( // @ / #
+									lines[line].toLowerCase().indexOf("] admin " + players[player].toLowerCase()) == 9 &&
+									lines[line].toLowerCase().indexOf(": ") != -1
+								) ||
+								( // CB 8
+									lines[line].toLowerCase().indexOf("] (cb:8) " + players[player].toLowerCase()) == 9 &&
+									lines[line].toLowerCase().indexOf(": ") != -1
+								)
+							)
+						) ||
+						(document.getElementById('player_admin_messages').checked == true &&
+							(
+								(
+									( // admin who sent it
+										lines[line].toLowerCase().indexOf("] * admin message from {ffff00}" + players[player].toLowerCase()) == 9 &&
+										lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}") != -1
+									) ||
+									( // player that it was sent to
+										lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}" + players[player].toLowerCase()) != -1 &&
+										lines[line].toLowerCase().indexOf(":") != -1
+									)
+								) ||
+								( // received from
+									lines[line].toLowerCase().indexOf("] " + players[player].toLowerCase()) == 9 &&
+									lines[line].toLowerCase().indexOf("] ** " + players[player].toLowerCase()) != 9 &&
+									lines[line].toLowerCase().indexOf("] >> " + players[player].toLowerCase()) != 9 &&
+									lines[line].toLowerCase().indexOf("] * " + players[player].toLowerCase()) != 9 &&
+									lines[line].toLowerCase().indexOf("(") != -1 &&
+									lines[line].toLowerCase().indexOf("): ") != -1
+								)
+							)
+						) ||
+						(document.getElementById('player_admin_reports').checked == true &&
+							lines[line].toLowerCase().indexOf(") reported {ffff00}") != -1 &&
+							lines[line].toLowerCase().indexOf(players[player].toLowerCase()) != -1
+						) ||
+						(document.getElementById('player_admin_transfers').checked == true &&
+							(
+								lines[line].toLowerCase().indexOf("] -- ") == 9 &&
+								lines[line].toLowerCase().indexOf(" transferred $") != -1 &&
+								lines[line].toLowerCase().indexOf(players[player].toLowerCase()) != -1
+							)
+						) ||
+						(document.getElementById('player_pm_received').checked == true &&
+							lines[line].toLowerCase().indexOf("] ** " + players[player].toLowerCase()) == 9 &&
+							lines[line].toLowerCase().indexOf("(") != -1 &&
+							lines[line].toLowerCase().indexOf("): ") != -1
+						) ||
+						(document.getElementById('player_pm_sent').checked == true &&
+							lines[line].toLowerCase().indexOf("] >> " + players[player].toLowerCase()) == 9 &&
+							lines[line].toLowerCase().indexOf("(") != -1 &&
+							lines[line].toLowerCase().indexOf("): ") != -1
+						) ||
+						(document.getElementById('player_offline').checked == true &&
+							lines[line].toLowerCase().indexOf("] (message: " + players[player].toLowerCase()) == 9 &&
+							lines[line].toLowerCase().indexOf(") ") != -1
+						) ||
+						(document.getElementById('player_transfers').checked == true &&
+							(
+								(
+									lines[line].toLowerCase().indexOf("] $") == 9 &&
+									lines[line].toLowerCase().indexOf(" given to " + players[player].toLowerCase()) != -1 &&
+									lines[line].toLowerCase().indexOf(" (") != -1 &&
+									lines[line].toLowerCase().indexOf(")") != -1
+								) ||
+								(
+									lines[line].toLowerCase().indexOf("] (money transfer from " + players[player].toLowerCase()) == 9 &&
+									lines[line].toLowerCase().indexOf(") $") != -1 &&
+									lines[line].toLowerCase().indexOf(": ") != -1
+								)
+							)
+						) ||
+						(document.getElementById('player_welcomemessage').checked == true &&
+							(
+								lines[line].toLowerCase().indexOf(players[player].toLowerCase() + " (") != -1 &&
+								lines[line].toLowerCase().indexOf(") connected") != -1 &&
+								lines[line].toLowerCase().indexOf("] * ") != -1
+							)
+						) ||
+						(document.getElementById('player_leaveserver').checked == true &&
+							lines[line].toLowerCase().indexOf(players[player].toLowerCase() + " left the server (") != -1 &&
+							lines[line].toLowerCase().indexOf("] " + players[player].toLowerCase()) == 9
+						)
+					)
+					{
+
+						if(terms.length > 0)
+						{
+
+							for(term in terms)
+							{
+								if(lines[line].toLowerCase().indexOf(terms[term].toLowerCase()) >= 0 || admin_message_include == line)
+								{
+									lines[line] = htmlspecialchars(lines[line]);
+									if(color == "parse")
+									{
+										searched.push(parse_colors(lines[line]));
+									}
+									else if (color == "strip")
+									{
+										searched.push(strip_colors(lines[line]));
+									}else{
+										searched.push(lines[line]);
+									}
+									if((document.getElementById('player_admin_messages').checked == true || document.getElementById('player_all').checked == true) &&
+									(document.getElementById('player_admin_messages').checked == true &&
+										(
+											(
+												( // admin who sent it
+													lines[line].toLowerCase().indexOf("] * admin message from {ffff00}" + players[player].toLowerCase()) == 9 &&
+													lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}") != -1
+												) ||
+												( // player that it was sent to
+													lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}" + players[player].toLowerCase()) != -1 &&
+													lines[line].toLowerCase().indexOf(":") != -1
+												)
+											)
+										)
+									)
+									)
+									
+									{
+										if(window.file == true) {	searched.push(lines[parseInt(line) + 1]); } else { searched.push(lines[parseInt(line) + 2]); } // differences between textarea and file...
+									}
+									break;
+								}
+							}
+						}
+						else
+						{
+							lines[line] = htmlspecialchars(lines[line]);
+							var regColorcode = /^(#)?([0-9a-fA-F]{6})?$/;
+							if(color == "parse")
+								{
+									searched.push(parse_colors(lines[line]));
+								}
+								else if (color == "strip")
+								{
+									searched.push(strip_colors(lines[line]));
+								}else{
+								searched.push(lines[line]);
+								}
+							if((document.getElementById('player_admin_messages').checked == true || document.getElementById('player_all').checked == true) &&
+											(
+												( // admin who sent it
+													lines[line].toLowerCase().indexOf("] * admin message from {ffff00}" + players[player].toLowerCase()) == 9 &&
+													lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}") != -1
+												) ||
+												( // player that it was sent to
+													lines[line].toLowerCase().indexOf(" {ffffff}to {ffff00}" + players[player].toLowerCase()) != -1 &&
+													lines[line].toLowerCase().indexOf(":") != -1
+												)
+											)
+							)
+							{
+								searched.push(lines[parseInt(line) + 2]);
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		document.getElementById('output').innerHTML = searched.join('<br />');
+		if(document.getElementById('output').innerHTML == "") document.getElementById('output').innerHTML = "******************************** no results... well this sucks :( ********************************<br />--------------------------------------------------------------------------------------------------<br />make sure you've entered the names correctly, made sure your search terms are not too restricting.<br />make sure you have at least one filter selected.<br />if you're using <span style='color:blue;'>Internet Explorer</span>, consider using a more modern browser.";
+		document.getElementById('overlay').style.display = 'none';
+		
+		window.location.hash="output"; 
+	}
+
+</script>
+
+</head>
+<body onload="fileDropInit();"><noscript style="width: 100%; text-align: center; font-weight:bold; font-size: 36px; display:block; margin-top: -25px; padding-top: 25px; height: 110%; background-color: #eee; position:fixed; color: #111;">The chatlog sorter will not work without Javascript!</noscript>
+<div style="height:100%; width:100%; text-align: center;position:fixed; top:0px; left:0px; font-size:18px; color:white; background-color: rgba(0,0,0,0.75); font-weight:bold; display:none;" id="overlay">sorting chatlog...<br />
+<span style="font-size:36px;">oompa loompa's are sorting your chatlog, please be patient.<br />large files can take some to sort due to the workers going on strike...<hr />chatlog sorter made by Joshy</span></div>
+<div id="counter" style="position: fixed; bottom:0px; width:100%; text-align: right; display:none; background-color(0,0,0,0.25);"></div>
+<div style="display:inline-block; float:right; font-size:9px; clear:both;"><a href="#admin_options" onclick="document.getElementById('admin_options').style.display = 'inline'; this.parentNode.style.display = 'none';">admin mode</a></div>
+<fieldset>
+	<legend>Just a quick message...</legend>
+	<p><b>Joshy</b> made this tool, not $nake. That is all. Also did you know you can colour your poorly sentenced (joking :P) welcome messages here: <a href="http://dl.dropbox.com/u/32336900/gta_color.html">link to the tool.</a></p>
+</fieldset>
+<fieldset style="clear:both;">
+	<legend>Step 1</legend>
+	<p>You have two options: you can either directly use the chatlog as a file (much faster), or paste the chatlog into the page (can be slow with big pastes).</p>
+	<div id="file_drop" style="float: left; width: 380px; height: 180px; padding: 10px; background-color: #eee; border-radius: 30px; border: 3px dashed #999; color: #999; text-align: center; font-size: 36px; ">Drag & drop file here<br /><span style="font-size: 18px;">or manually select a file</span><br /><input id="file_select" type="file" /><span id="file_info" style="display:none; font-size: 13px;"></span><input type="button" id="file_release" onclick="releaseFile();" style="display:none;" /></div><textarea style="float: right; width: 400px; min-height: 200px;" id="chatlog"></textarea>
+</fieldset>
+<fieldset>
+	<legend>Step 2</legend>
+	<div style="width: 400px; display: inline-block;">
+	<p>Enter list of players here, seperated by new lines. If 'all data' filter is being used, you can enter search terms here. Toggle case-sensitivity in step 3.</p>
+	<textarea style="width: 400px; min-height: 200px;" id="players"></textarea>
+	</div>
+	<div style="margin-left: 10px; width: 400px; display: inline-block;">
+	<p>Enter list of search terms here, seperated by new lines. Case-insensitive. If no terms are entered, the sorter will display everything.</p>
+	<textarea style="width: 400px; min-height: 200px;" id="terms"></textarea>
+	</textarea>
+	</div>
+	<div style="width: 400px; margin-left: 10px; display: inline-block;">
+	<p>Select search filters.</p><div id='selections'>
+	<input type="checkbox" id="player_chat" /> <a title="This may show false entries if you don't use any player names.">Chat</a><br />
+	<span id="admin_options" style="display:none;"><input type="checkbox" id="player_admin_chat" /> Admin chat (@/# and CB 8)<br />
+	<input type="checkbox" id="player_admin_messages" /> Admin message from/to players<br />
+	<input type="checkbox" id="player_admin_reports" /> Admin reports<br />
+	<input type="checkbox" id="player_admin_transfers" /> Admin transfers<br /></span>
+	<input type="checkbox" id="player_pm_received" /> PMs sent to you<br />
+	<input type="checkbox" id="player_pm_sent" /> PMs you've sent<br />
+	<input type="checkbox" id="player_offline" /> Messages sent to you by /sendmessage<br />
+	<input type="checkbox" id="player_transfers" /> Money transfers<br />
+	<input type="checkbox" id="player_welcomemessage" /> Joined the server message<br />
+	<input type="checkbox" id="player_leaveserver" /> Left the server message<br /><hr />
+	</div>
+	<input type="checkbox" id="player_all" onchange="if(this.checked) { document.getElementById('selections').style.display = 'none'; } else { document.getElementById('selections').style.display = 'block'; }"  /> All data<br />
+	</div>
+</fieldset>
+<fieldset>
+	<legend>Step 3</legend>
+	<p>One last thing, what should the sorter do with color codes? Also, should names be case-sensitive?</p>
+	<select id="color">
+	<option value="parse">Parse color codes</option>
+	<option value="strip">Strip color codes</option>
+	<option value="intact">Leave intact</option>
+	</select>
+	<input type="checkbox" id="case" checked="checked" /> Name case-sensitivity
+</fieldset>
+<fieldset>
+	<legend>Search</legend>
+	<input style="margin-left: 25%; margin-right: 25%; width: 50%; font-size: 18px;" onclick="randomOverlay(); document.getElementById('overlay').style.display = 'block'; setTimeout(function() {sort_log();},1000);" type="button" value="Search!" />
+</fieldset>
+<fieldset style=" display: none;" id="output_container">
+	<legend>Results</legend>
+	<p><a onclick="document.getElementById('output').focus(); if (document.selection) { var range = document.body.createTextRange(); range.moveToElementText(document.getElementById('output')); range.select(); } else if (window.getSelection) { var range = document.createRange(); range.selectNode(document.getElementById('output')); window.getSelection().addRange(range); }" style="cursor:pointer; border-bottom: 1px #999 dotted;">Click here to select all text.</a></p>
+	<div style="width: 100%; min-height: 700px;" id="output"></div>
+</fieldset>
+</body>
+</html>
