@@ -16,8 +16,12 @@ a {
     text-decoration: none;
     color: #999;
 }
+a:link {
+    color: green;
+}
 a:hover {
     text-decoration: underline;
+    color: #ff0000;
 }
 h1 {
     font-size: 3em;
