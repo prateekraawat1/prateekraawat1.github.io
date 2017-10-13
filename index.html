@@ -4,6 +4,9 @@
 		<title>Convoy Trucking Administration area</title>
 		<!-- link to main stylesheet -->
 		<link rel="stylesheet" type="text/css" href="/css/main.css">
+		{% if site.google_analytics and jekyll.environment == 'production' %}
+		{% include analytics.html %}
+		{% endif %}
 	</head>
 	<body>
 		<div class="container">
@@ -27,6 +30,5 @@
         		<li><a href="mailto:prateekj297@gmail.com@gmail.com">Email</a></li>
 			</ul>
 		</footer>
-		{% include analytics.html %}
 	</body>
 </html>
